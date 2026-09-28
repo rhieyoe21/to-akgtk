@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(cuid())
+  name         String
+  school       String      @default("")
+  email        String      @unique
+  passwordHash String
+  sessionVersion Int        @default(0)
+  role         String      @default("PARTICIPANT")
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  attempts     Attempt[]
+  resetTokens  ResetToken[]
+
+  @@index([role, isActive])
+}
+
+model Question {
+  id             String   @id @default(cuid())
+  category       String
+  prompt         String   @db.Text
+  options        Json
+  correctIndex   Int
+  explanation    String?  @db.Text
+  sourceUrl      String   @db.Text
+  sourceTitle    String?  @db.Text
+  difficulty     String   @default("sedang")
+  hideSource     Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  createdBy      String?
+  generatedByAI  Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  attemptItems   AttemptQuestion[]
+
+  @@index([category, isActive])
+  @@index([category, difficulty, isActive])
+}
+
+model Attempt {
+  id          String            @id @default(cuid())
+  userId      String
+  mode        String
+  timed       Boolean           @default(true)
+  durationSec Int
+  status      String            @default("IN_PROGRESS")
+  score       Float?
+  startedAt   DateTime          @default(now())
+  submittedAt DateTime?
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       AttemptQuestion[]
+
+  @@index([userId, startedAt])
+  @@index([status, startedAt])
+}
+
+model AttemptQuestion {
+  id             String   @id @default(cuid())
+  attemptId      String
+  questionId     String?
+  position       Int
+  promptSnapshot String   @db.Text
+  optionsSnapshot Json
+  correctIndex   Int
+  explanation    String?  @db.Text
+  sourceUrl      String   @db.Text
+  sourceTitle    String?  @db.Text
+  hideSource     Boolean  @default(false)
+  category       String
+  selectedIndex  Int?
+  attempt        Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question       Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+
+  @@unique([attemptId, position])
+  @@index([attemptId])
+}
+
+model ResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model RateLimit {
+  key       String   @id
+  count     Int      @default(0)
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+}
+
+model AiGenerationSettings {
+  id                       String   @id @default("default")
+  maxQuestionsPerRequest   Int      @default(20)
+  requestsPerHour          Int      @default(8)
+  sourceAuditEnabled       Boolean  @default(true)
+  sourceEvidenceCheck      Boolean  @default(false)
+  hideSources              Boolean  @default(false)
+  updatedAt                DateTime @updatedAt
+}

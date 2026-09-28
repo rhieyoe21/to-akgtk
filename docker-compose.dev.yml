@@ -1,0 +1,5 @@
+# Override development: expose PostgreSQL only on loopback so Next.js can run on the host.
+services:
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"
