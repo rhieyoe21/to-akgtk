@@ -26,6 +26,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      TZ: Asia/Jakarta
       HOSTNAME: 0.0.0.0
       DATABASE_URL: ${DATABASE_URL:-}
       DATABASE_HOST: ${DATABASE_HOST:-db}
