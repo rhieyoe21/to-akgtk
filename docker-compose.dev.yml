@@ -1,5 +1,16 @@
-# Override development: expose PostgreSQL only on loopback so Next.js can run on the host.
+# Override development.
+#
+# - Project dipisah (name: to-akgtk-dev) agar container/volume development tidak
+#   bentrok dengan production yang memakai project "to-akgtk".
+# - PostgreSQL hanya dibuka ke loopback pada port DEV_DB_PORT (default 5433),
+#   supaya tidak bertabrakan dengan PostgreSQL production di port 5432.
+name: to-akgtk-dev
+
 services:
   db:
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${DEV_DB_PORT:-5433}:5432"
+  web:
+    # Development menjalankan Next.js di host (npm run dev), jadi port web
+    # container direset agar tidak bentrok dengan production di 3434.
+    ports: !reset []

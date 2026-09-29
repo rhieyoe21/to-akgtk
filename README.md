@@ -97,8 +97,8 @@ Aplikasi SaaS pembelajaran dan simulasi **Asesmen Kinerja Guru dan Tenaga Kepend
 ├── prisma/                  # schema.prisma, migrasi, seed
 ├── scripts/                 # start.js (migrasi+seed+start), backup.sh
 ├── tests/                   # Pengujian unit (node --test)
-├── docker-compose.yml       # Layanan: db, web, cloudflared (profil tunnel)
-├── docker-compose.dev.yml   # Override dev: expose PostgreSQL ke loopback
+├── docker-compose.yml       # Layanan: db, web
+├── docker-compose.dev.yml   # Override dev: project terpisah, PostgreSQL di port 5433
 ├── Dockerfile
 ├── .env.example             # Template produksi
 └── .env.development.example # Template development
@@ -182,7 +182,7 @@ chmod 600 .env
 openssl rand -hex 32
 ```
 
-Edit `.env`: ganti `AUTH_SECRET`, password contoh, dan `ADMIN_EMAIL`/`ADMIN_PASSWORD`; masukkan Gemini API key. Pastikan `DATABASE_URL` memakai host **`localhost`**.
+Edit `.env`: ganti `AUTH_SECRET`, password contoh, dan `ADMIN_EMAIL`/`ADMIN_PASSWORD`; masukkan Gemini API key. Pastikan `DATABASE_URL` memakai host **`localhost`** dan port **`5433`** (sesuai `DEV_DB_PORT`).
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
@@ -201,6 +201,10 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 ```
 
 Volume database tetap tersimpan; tambahkan `-v` hanya jika ingin menghapus data lokal.
+
+### Development berdampingan dengan production
+
+Override development memakai nama project terpisah (`to-akgtk-dev`), container `to-akgtk-dev-db-1`, volume `to-akgtk-dev_postgres_data`, dan port host `5433` (bukan 5432). Karena itu **aman dijalankan di server yang sama dengan production**: container, volume, jaringan, dan port tidak bentrok. Port service `web` juga direset pada override ini agar tidak menabrak port production `3434`. Untuk mengubah port, set `DEV_DB_PORT` di `.env`.
 
 ### Reset password di development
 
@@ -321,7 +325,7 @@ Pembaruan aplikasi:
 
 ```bash
 git pull
-docker compose --profile tunnel up -d --build
+docker compose up -d --build
 ```
 
 Migrasi database dijalankan sebelum aplikasi mulai. Uji pemulihan backup secara berkala dan rotasi kredensial melalui prosedur deployment yang terkendali.
