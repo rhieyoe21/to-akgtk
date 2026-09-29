@@ -216,7 +216,7 @@ Di **production**, tautan tidak pernah dicatat dan kegagalan kirim membatalkan t
 | Variabel | Wajib | Keterangan |
 |---|---|---|
 | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Ya | Kredensial container PostgreSQL. |
-| `DATABASE_URL` | Ya | DSN PostgreSQL. Host `db` di Compose, `localhost` di dev. |
+| `DATABASE_URL` | Tidak* | DSN PostgreSQL. Pada Compose dibangun otomatis dari `POSTGRES_*` dengan host `db` (password otomatis di-URL-encode); *wajib hanya bila `POSTGRES_*` tidak diset. Untuk dev di host gunakan `localhost`. |
 | `AUTH_SECRET` | Ya | Secret penandatangan JWT, minimal 32 karakter. |
 | `APP_URL` | Ya | URL publik aplikasi (untuk tautan reset). |
 | `ADMIN_NAME` | Tidak | Nama admin awal (default `Administrator`). |
@@ -339,6 +339,7 @@ Cakupan tes: validasi URL sumber, penyaringan sitasi grounding, deteksi soft-404
 |---|---|
 | Aplikasi menolak start | Nilai contoh pada `AUTH_SECRET`/`ADMIN_PASSWORD`/`DATABASE_URL` belum diganti. |
 | `The table ... does not exist` | Migrasi belum diterapkan: `npx prisma migrate deploy`. |
+| `P1001: Can't reach database server` | `DATABASE_URL` memakai host `localhost`. Di container gunakan host `db`; isi `POSTGRES_*` agar dibangun otomatis, lalu `docker compose up -d --build web`. |
 | Email reset tidak terkirim | Konfigurasi SMTP salah atau penyedia mematikan SMTP AUTH. Cek log `[reset-password]`. |
 | Generate AI gagal | Kuota/limit Gemini, API key salah, atau batas aplikasi tercapai. Lihat **Log diagnostik Gemini** di panel admin. |
 | Sumber soal ditolak | Audit tautan menolak homepage/soft-404/tidak relevan. Periksa alasan pada notifikasi. |

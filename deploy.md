@@ -56,7 +56,7 @@ Edit `.env` (mis. `nano .env`) dan ganti **semua nilai contoh**. Aplikasi akan m
 | `POSTGRES_DB` | `akgtk` | Nama database. |
 | `POSTGRES_USER` | `akgtk` | User database. |
 | `POSTGRES_PASSWORD` | password acak panjang | Jangan pakai contoh. |
-| `DATABASE_URL` | `postgresql://akgtk:<PASSWORD>@db:5432/akgtk?schema=public` | **Host harus `db`**. URL-encode karakter khusus di password. |
+| `DATABASE_URL` | `postgresql://akgtk:<PASSWORD>@db:5432/akgtk?schema=public` | Opsional. Pada Compose, nilai ini **dibangun otomatis** dari `POSTGRES_*` dengan host `db` (password otomatis di-URL-encode), jadi boleh dikosongkan. **Jangan** pakai host `localhost` di dalam container. |
 | `AUTH_SECRET` | hasil `openssl rand -hex 32` | Minimal 32 karakter. |
 | `APP_URL` | `https://tryout.domain-anda.com` | Harus sama dengan domain publik agar tautan reset benar. |
 | `ADMIN_NAME` | `Administrator` | Nama admin awal. |
@@ -231,6 +231,7 @@ sudo ufw enable
 | Gejala | Solusi |
 |---|---|
 | Container `web` restart terus | Lihat `docker compose logs web`. Biasanya nilai contoh di `.env` belum diganti. |
+| `P1001: Can't reach database server at localhost:5432` | `.env` memakai host `localhost` padahal di dalam container harus `db`. Perbaikan otomatis: isi `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` (start.js membangun `DATABASE_URL` dengan host `db`). Pastikan `POSTGRES_PASSWORD` sama dengan password yang dipakai `DATABASE_URL`, lalu `docker compose up -d --build web`. |
 | `The table ... does not exist` | Jalankan `docker compose run --rm web ./node_modules/.bin/prisma migrate deploy` atau restart `web`. |
 | Health check gagal | Pastikan `db` healthy: `docker compose ps`, lalu `docker compose logs db`. |
 | Halaman tidak bisa diakses dari luar | Pastikan ingress tunnel mengarah ke `http://127.0.0.1:3434` dan `cloudflared` berjalan. |
