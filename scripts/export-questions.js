@@ -1,5 +1,7 @@
 // Export the current question bank to prisma/seed-data/questions.json so it can
-// be used as initial seed data. Run: node --env-file=.env scripts/export-questions.js
+// be used as initial seed data. Only Question rows are exported: participants
+// and tryout results (Attempt/AttemptQuestion) are intentionally NOT included.
+// Run: node --env-file=.env scripts/export-questions.js
 const fs = require("node:fs");
 const path = require("node:path");
 const { PrismaClient } = require("@prisma/client");

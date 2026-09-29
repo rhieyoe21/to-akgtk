@@ -85,7 +85,7 @@ docker compose logs -f web
 Yang terjadi saat startup (dijalankan otomatis oleh `scripts/start.js`):
 
 1. Migrasi database (`prisma migrate deploy`).
-2. Seed: membuat akun admin awal dan memuat bank soal awal dari `prisma/seed-data/questions.json` **hanya jika bank soal masih kosong**.
+2. Seed: membuat akun admin awal dan memuat bank soal awal dari `prisma/seed-data/questions.json` **hanya jika bank soal masih kosong**. Seed **tidak** memasukkan data peserta maupun hasil tryout.
 3. Menjalankan Next.js pada port internal `3000`, dipublikasikan ke host `127.0.0.1:3434`.
 
 Tunggu hingga log menampilkan `Ready` lalu tekan `Ctrl+C` untuk keluar dari log (container tetap berjalan).

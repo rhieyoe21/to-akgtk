@@ -6,6 +6,12 @@ const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 const DIFFICULTIES = ["mudah", "sedang", "sulit", "campuran"];
 
+// Seed hanya menyiapkan:
+//   1) akun admin awal (dari ADMIN_*), dan
+//   2) bank soal awal (dari prisma/seed-data/questions.json).
+// Seed TIDAK pernah memasukkan data peserta (role PARTICIPANT) maupun hasil
+// tryout (Attempt/AttemptQuestion). Jangan menambahkan seed untuk keduanya.
+
 async function seedAdmin() {
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   const password = process.env.ADMIN_PASSWORD;

@@ -306,7 +306,7 @@ Migrasi database dijalankan sebelum aplikasi mulai. Uji pemulihan backup secara 
 
 ## Data awal & pemeliharaan
 
-- **Seed bank soal:** `prisma/seed-data/questions.json` dimuat otomatis oleh `npm run db:seed`/startup **hanya bila bank soal kosong**, sehingga tidak menimpa data yang sudah ada.
+- **Seed bank soal:** `prisma/seed-data/questions.json` dimuat otomatis oleh `npm run db:seed`/startup **hanya bila bank soal kosong**, sehingga tidak menimpa data yang sudah ada. Seed hanya berisi **bank soal** (dan akun admin awal); **tidak** memasukkan data peserta maupun hasil tryout.
 - **Bersihkan awalan opsi** (`A.`, `B)`, `C:`, `D -`) pada data lama:
 
   ```bash
