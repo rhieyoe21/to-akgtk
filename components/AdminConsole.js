@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { CATEGORIES, DIFFICULTIES, DIFFICULTY_LABELS, MODES } from "@/lib/constants";
+import ChangePasswordForm from "@/components/ChangePasswordForm";
 
 async function api(url, options) {
   let res;
@@ -143,6 +144,7 @@ export default function AdminConsole() {
 
   const load = useCallback(async (selected = tab) => {
     try {
+      if (selected === "account") return;
       if (selected === "settings") {
         const data = await api("/api/admin/settings/ai-generation");
         setAiSettings(data.settings);
@@ -166,6 +168,7 @@ export default function AdminConsole() {
     let active = true;
     async function refresh() {
       try {
+        if (tab === "account") { if (active) setLoading(false); return; }
         if (tab === "settings") {
           const data = await api("/api/admin/settings/ai-generation");
           if (active) { setAiSettings(data.settings); setAiSettingsDraft(data.settings); }
@@ -330,7 +333,7 @@ export default function AdminConsole() {
 
   return <section className="panel panel-pad">
     <div className="admin-tabs" role="tablist" aria-label="Pengelolaan admin">
-      {[ ["questions", "Bank soal"], ["users", "Peserta"], ["results", "Hasil tryout"], ["settings", "Pengaturan"] ].map(([id, label]) => <button key={id} className="tab-button" role="tab" aria-selected={tab === id} onClick={() => { setLoading(true); setTab(id); setSearch(""); setTablePages((old) => ({ ...old, [id]: 1 })); if (id === "questions") setSelectedQuestionIds([]); setError(""); setErrorDetails(null); setNotice(""); }}>{label}</button>)}
+      {[ ["questions", "Bank soal"], ["users", "Peserta"], ["results", "Hasil tryout"], ["settings", "Pengaturan"], ["account", "Ubah password"] ].map(([id, label]) => <button key={id} className="tab-button" role="tab" aria-selected={tab === id} onClick={() => { setLoading(true); setTab(id); setSearch(""); setTablePages((old) => ({ ...old, [id]: 1 })); if (id === "questions") setSelectedQuestionIds([]); setError(""); setErrorDetails(null); setNotice(""); }}>{label}</button>)}
     </div>
     {error && <div className="form-message" role="alert"><div>{error}</div>{errorDetails && <details className="diagnostic-details"><summary>Log diagnostik Gemini</summary><pre>{JSON.stringify(errorDetails, null, 2)}</pre></details>}</div>}{notice && <div className="form-message form-success" role="status"><div>{notice}</div>{noticeDetails && <details className="diagnostic-details"><summary>Alasan soal dilewati</summary><pre>{JSON.stringify(noticeDetails, null, 2)}</pre></details>}</div>}
 
@@ -363,5 +366,7 @@ export default function AdminConsole() {
     {tab === "results" && <><div className="admin-toolbar"><div><h2>Hasil tryout</h2><span className="admin-note">Percobaan terbaru peserta.</span></div><button className="button secondary small" onClick={() => load()}>Muat ulang</button></div>{loading ? <div className="loading">Memuat hasil…</div> : <><div className="table-wrap"><table><thead><tr><th>Peserta</th><th>Mode</th><th>Nilai</th><th>Dikerjakan</th><th></th></tr></thead><tbody>{attempts.map((attempt) => <tr key={attempt.id}><td><strong>{attempt.user.name}</strong><br /><span className="admin-note">{attempt.user.school}</span></td><td>{MODES[attempt.mode]?.label || attempt.mode}</td><td><span className="score-pill">{attempt.score}%</span></td><td>{attempt.submittedAt ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(attempt.submittedAt)) : "—"}</td><td><Link className="text-link" href={`/results/${attempt.id}`}>Buka evaluasi</Link></td></tr>)}</tbody></table>{!attempts.length && <div className="empty-state"><strong>Belum ada hasil</strong>Hasil yang telah dikumpulkan akan muncul di sini.</div>}</div><TablePagination info={pageInfo.results} onPageChange={(page) => changePage("results", page)} /></>}</>}
 
     {tab === "settings" && <section className="panel panel-pad"><div className="admin-toolbar"><div><h2>Pengaturan</h2><p className="admin-note">Perubahan berlaku langsung tanpa restart. Batas maksimum mutlak adalah 50 soal per batch dan 100 permintaan per jam.</p></div></div><form className="edit-box" onSubmit={saveAiSettings}><div className="edit-grid"><div className="field"><label htmlFor="maxQuestionsPerRequest">Maksimal soal per batch</label><input id="maxQuestionsPerRequest" name="maxQuestionsPerRequest" type="number" min="1" max="50" required value={aiSettingsDraft.maxQuestionsPerRequest} onChange={(event) => setAiSettingsDraft((old) => ({ ...old, maxQuestionsPerRequest: event.target.value === "" ? "" : Number(event.target.value) }))} /><span className="field-help">Batas tersimpan saat ini: {aiSettings.maxQuestionsPerRequest} soal per permintaan.</span></div><div className="field"><label htmlFor="requestsPerHour">Batas generate per admin per jam</label><input id="requestsPerHour" name="requestsPerHour" type="number" min="1" max="100" required value={aiSettingsDraft.requestsPerHour} onChange={(event) => setAiSettingsDraft((old) => ({ ...old, requestsPerHour: event.target.value === "" ? "" : Number(event.target.value) }))} /><span className="field-help">Batas tersimpan saat ini: {aiSettings.requestsPerHour} percobaan per jam untuk akun admin dan alamat jaringan.</span></div><div className="field wide"><label htmlFor="sourceAuditEnabled"><input id="sourceAuditEnabled" name="sourceAuditEnabled" type="checkbox" defaultChecked={aiSettings.sourceAuditEnabled !== false} /> Audit tautan sumber (HTTP) sebelum soal disimpan</label><span className="field-help">Memeriksa tautan langsung dapat diakses, bukan homepage, bukan 404 lunak, dan isinya cukup relevan. Tidak memakai kuota Gemini.</span></div><div className="field wide"><label htmlFor="sourceEvidenceCheck"><input id="sourceEvidenceCheck" name="sourceEvidenceCheck" type="checkbox" defaultChecked={aiSettings.sourceEvidenceCheck === true} /> Verifikasi bukti isi halaman dengan Gemini (opsional)</label><span className="field-help">Mengirim kutipan halaman ke Gemini untuk memastikan sumber benar-benar mendukung soal. Menambah pemakaian kuota API.</span></div><div className="field wide"><label htmlFor="hideSources"><input id="hideSources" name="hideSources" type="checkbox" defaultChecked={aiSettings.hideSources === true} /> Sembunyikan semua sumber di halaman evaluasi</label><span className="field-help">Menyembunyikan tautan sumber pada evaluasi/hasil untuk semua soal. Pengaturan per soal tetap dapat diatur lewat toggle di baris bank soal.</span></div><div className="field wide"><label htmlFor="donationMessage">Pesan donasi</label><input id="donationMessage" name="donationMessage" defaultValue={aiSettings.donationMessage || ""} maxLength="500" placeholder="Jika aplikasi ini bermanfaat, dukung pengembangannya melalui donasi." /><span className="field-help">Tampil pada dialog setelah tryout dikumpulkan.</span></div><div className="field wide"><label htmlFor="donationUrl">URL donasi (opsional)</label><input id="donationUrl" name="donationUrl" type="url" defaultValue={aiSettings.donationUrl || ""} maxLength="500" placeholder="https://..." /><span className="field-help">Tombol donasi tampil bila URL diisi.</span></div></div><button className="button" disabled={savingAiSettings}>{savingAiSettings ? "Menyimpan…" : "Simpan pengaturan"}</button></form></section>}
+
+    {tab === "account" && <section className="panel panel-pad"><div className="admin-toolbar"><div><h2>Ubah password</h2><p className="admin-note">Ganti password akun admin Anda. Sesi lain akan dikeluarkan.</p></div></div><ChangePasswordForm /></section>}
   </section>;
 }

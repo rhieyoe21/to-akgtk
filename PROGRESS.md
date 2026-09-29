@@ -26,6 +26,7 @@
 - [x] Menu publik (Kompetensi, Tentang simulasi) disembunyikan di dashboard, riwayat, dan halaman ujian.
 - [x] Notifikasi pendaftaran berhasil dan fallback redirect ke halaman login.
 - [x] Toggle password, konfirmasi password, fallback POST, dan kredensial tidak ditampilkan pada URL.
+- [x] Fitur ubah password di dashboard peserta dan panel admin; sesi lain dicabut setelah berhasil.
 - [x] Bootstrap admin privat serta manajemen pengguna.
 - [x] Reset password via email dan reset oleh admin.
 - [x] Log `[reset-password]` menampilkan tautan reset di development saat SMTP gagal/belum diatur; tidak mencatat token di production.

@@ -45,6 +45,7 @@ Aplikasi SaaS pembelajaran dan simulasi Asesmen Kompetensi Guru dan Tenaga Kepen
 - Kredensial login/pendaftaran hanya dikirim melalui POST body, tidak melalui query string atau URL.
 - Reset password memakai token sekali pakai yang dikirim melalui SMTP, memiliki masa berlaku terbatas, dan disimpan dalam bentuk hash. Admin dapat membantu mereset akun.
 - Password minimal 8 karakter dan disimpan menggunakan bcrypt cost 12; sesi menggunakan cookie HTTP-only, Secure saat HTTPS, dan SameSite. Toggle tampilkan/sembunyikan password memakai ikon.
+- Peserta dan admin dapat mengubah password sendiri dari dasbor/panel (perlu password saat ini); setelah berhasil, sesi lain dicabut dan sesi aktif tetap berjalan.
 - Email digunakan untuk login dan pemulihan akun.
 
 ## Bank soal

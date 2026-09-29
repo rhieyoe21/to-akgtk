@@ -43,6 +43,7 @@ Aplikasi SaaS pembelajaran dan simulasi **Asesmen Kinerja Guru dan Tenaga Kepend
 - **Timer berbasis server**: waktu tetap berjalan meski halaman ditutup; sesi yang kedaluwarsa otomatis dikumpulkan.
 - Hasil & evaluasi lengkap: skor, rincian per kompetensi, jawaban Anda, kunci, pembahasan, dan sumber.
 - Riwayat tryout permanen yang dapat dibuka kembali kapan saja.
+- **Ubah password** mandiri dari dasbor (memerlukan password saat ini); sesi lain otomatis dikeluarkan.
 
 ### Admin pusat
 
@@ -56,6 +57,7 @@ Aplikasi SaaS pembelajaran dan simulasi **Asesmen Kinerja Guru dan Tenaga Kepend
 - Lihat hasil tryout semua peserta dan buka evaluasinya.
 - Pengaturan AI: batas soal per batch, batas generate per jam, audit tautan sumber, verifikasi bukti, dan sembunyikan sumber global.
 - Form tambah/edit soal berbentuk **modal** dan statistik bank soal menyegar otomatis.
+- Tab **Ubah password** untuk mengganti password admin.
 
 ---
 
