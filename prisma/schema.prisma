@@ -110,5 +110,7 @@ model AiGenerationSettings {
   sourceAuditEnabled       Boolean  @default(true)
   sourceEvidenceCheck      Boolean  @default(false)
   hideSources              Boolean  @default(false)
+  donationUrl              String?  @db.Text
+  donationMessage          String?  @db.Text
   updatedAt                DateTime @updatedAt
 }

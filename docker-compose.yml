@@ -44,27 +44,13 @@ services:
       DONATION_URL: ${DONATION_URL:-}
       DONATION_MESSAGE: ${DONATION_MESSAGE:-Jika aplikasi ini bermanfaat, dukung pengembangannya melalui donasi.}
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3434:3000"
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 8s
       retries: 4
       start_period: 45s
-    networks: [internal]
-    security_opt:
-      - no-new-privileges:true
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    restart: unless-stopped
-    profiles: [tunnel]
-    command: tunnel --no-autoupdate run
-    environment:
-      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
-    depends_on:
-      web:
-        condition: service_healthy
     networks: [internal]
     security_opt:
       - no-new-privileges:true

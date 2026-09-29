@@ -76,5 +76,9 @@
 - [x] Pagination API tabel admin dan navigasi halaman.
 - [x] Dockerfile dan Docker Compose untuk web, PostgreSQL, Cloudflare Tunnel.
 - [x] `.env.example`, `.gitignore`, startup menolak kredensial contoh, dan panduan Ubuntu/backup.
+- [x] Docker Compose tanpa service cloudflared (tunnel dijalankan di host) dan port host 3434.
+- [x] Seed bank soal awal dari `prisma/seed-data/questions.json` (hanya saat bank kosong) dan skrip ekspor soal.
+- [x] Skrip pemeliharaan membersihkan awalan opsi A./B./C./D. pada data lama.
+- [x] Pesan/URL donasi dapat diatur dari panel admin (Pengaturan) tanpa restart.
 - [x] Verifikasi migrasi, bootstrap admin, healthcheck, dan CSP nonce pada HTML.
 - [ ] Pemeriksaan browser visual tertunda: host pengembangan belum memiliki library sistem Chrome (`libatk-1.0.so.0`) dan pemasangannya memerlukan hak sudo.

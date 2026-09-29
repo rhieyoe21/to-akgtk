@@ -11,7 +11,7 @@ Aplikasi SaaS pembelajaran dan simulasi Asesmen Kompetensi Guru dan Tenaga Kepen
 - Menyediakan latihan dengan komposisi kompetensi yang ditetapkan.
 - Menyimpan percobaan dan evaluasi peserta secara permanen.
 - Memungkinkan admin menyusun bank soal dengan cepat melalui Gemini.
-- Menyediakan deployment mandiri pada Ubuntu dengan Docker Compose dan Cloudflare Tunnel.
+- Menyediakan deployment mandiri pada Ubuntu dengan Docker Compose (port host 3434). Cloudflare Tunnel dijalankan terpisah di host dan diarahkan ke `127.0.0.1:3434`, sehingga tidak disertakan sebagai layanan Compose.
 - Tidak menyediakan pembayaran atau langganan berbayar pada versi awal; dialog penutup dapat menyampaikan ajakan donasi.
 
 ## Pengguna dan hak akses
@@ -76,7 +76,8 @@ Admin dapat menghasilkan soal per kompetensi melalui Gemini API, dengan opsi Goo
 - Tampilkan skor keseluruhan, rincian per kompetensi, jawaban peserta, kunci yang benar, pembahasan jika tersedia, dan sumber soal.
 - Durasi ujian berwaktu dapat disesuaikan (1–600 menit) saat memulai; mode tanpa batas waktu tetap tersedia.
 - Setiap percobaan menyimpan snapshot soal, opsi, kunci, pembahasan, dan sumber agar evaluasi historis tetap akurat walaupun bank soal kemudian diedit.
-- Dialog setelah tryout mengucapkan terima kasih serta menampilkan pesan/link donasi yang dapat dikonfigurasi.
+- Dialog setelah tryout mengucapkan terima kasih serta menampilkan pesan/link donasi. Pesan dan URL donasi diatur oleh admin melalui panel Pengaturan tanpa restart; nilai environment hanya cadangan.
+- Tidak menyediakan langganan berbayar; donasi bersifat opsional.
 
 ## Keamanan dan privasi
 

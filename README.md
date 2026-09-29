@@ -134,7 +134,6 @@ Aplikasi SaaS pembelajaran dan simulasi **Asesmen Kinerja Guru dan Tenaga Kepend
    - `APP_URL` — alamat publik, mis. `https://tryout.example.com`.
    - `GEMINI_API_KEY` — kunci Gemini (opsional; hanya dipakai server).
    - `SMTP_*` — untuk reset password via email.
-   - `CLOUDFLARE_TUNNEL_TOKEN` — bila memakai tunnel.
 
    **Jangan unggah `.env` ke Git, tiket dukungan, atau chat publik.**
 
@@ -145,30 +144,28 @@ Aplikasi SaaS pembelajaran dan simulasi **Asesmen Kinerja Guru dan Tenaga Kepend
    docker compose logs -f web
    ```
 
-   Migrasi database dijalankan otomatis dan admin dibuat pada startup pertama. Halaman masuk admin memakai `ADMIN_EMAIL` dan `ADMIN_PASSWORD`.
+   Migrasi database dijalankan otomatis, admin dibuat pada startup pertama, dan **bank soal awal** dimuat dari `prisma/seed-data/questions.json` (hanya jika bank soal masih kosong). Halaman masuk admin memakai `ADMIN_EMAIL` dan `ADMIN_PASSWORD`.
 
 5. Periksa kesehatan aplikasi:
 
    ```bash
-   curl -fsS http://127.0.0.1:3000/api/health
+   curl -fsS http://127.0.0.1:3434/api/health
    # {"status":"ok"}
    ```
 
-Port web hanya di-bind ke `127.0.0.1:3000` untuk pemeriksaan lokal; akses publik disarankan lewat Cloudflare Tunnel. PostgreSQL tidak dipublikasikan ke host.
+Port web di-bind ke `127.0.0.1:3434` (port internal kontainer tetap 3000). PostgreSQL tidak dipublikasikan ke host. Karena `cloudflared` sudah berjalan di host, compose **tidak** menyertakan service tunnel; arahkan tunnel ke `http://127.0.0.1:3434`.
 
 ---
 
 ## Cloudflare Tunnel
 
-1. Buat tunnel di **Cloudflare Zero Trust** dan salin tunnel token.
-2. Tambahkan **public hostname** yang diarahkan ke service `http://web:3000`.
-3. Simpan token di `CLOUDFLARE_TUNNEL_TOKEN` pada `.env`, lalu jalankan dengan profil tunnel:
+`cloudflared` diasumsikan **sudah berjalan di host** (bukan di dalam compose), sehingga tidak ada service tunnel di `docker-compose.yml`.
 
-   ```bash
-   docker compose --profile tunnel up -d --build
-   ```
+1. Arahkan ingress tunnel ke aplikasi: `http://127.0.0.1:3434` (port web yang dipublikasikan).
+2. Tambahkan **public hostname** di Cloudflare Zero Trust yang mengarah ke alamat tersebut.
+3. Set `APP_URL` di `.env` sama dengan domain publik agar tautan reset password benar.
 
-TLS publik ditangani Cloudflare. Pastikan `APP_URL` sama dengan domain publik agar tautan reset password benar.
+TLS publik ditangani Cloudflare. Bila tunnel berjalan di jaringan host yang sama, tidak perlu mengekspos port ke internet.
 
 ---
 
@@ -227,8 +224,7 @@ Di **production**, tautan tidak pernah dicatat dan kegagalan kirim membatalkan t
 | `GEMINI_API_KEY` | Tidak | Kunci Gemini untuk generate soal (server-side). |
 | `GEMINI_MODEL` | Tidak | Default `gemini-3.5-flash-lite`. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Tidak* | Untuk reset password via email. *Wajib bila memakai email di produksi. |
-| `CLOUDFLARE_TUNNEL_TOKEN` | Tidak | Token tunnel Cloudflare. |
-| `DONATION_URL`, `DONATION_MESSAGE` | Tidak | Pesan/link donasi setelah tryout. |
+| `DONATION_URL`, `DONATION_MESSAGE` | Tidak | Nilai awal donasi (opsional). Dapat diubah kapan saja di **Pengaturan** panel admin tanpa restart; nilai env dipakai sebagai cadangan. |
 | `DEV_ALLOWED_ORIGINS` | Tidak | Hostname tambahan untuk resource HMR di development. |
 
 > Jangan pernah memberi prefix `NEXT_PUBLIC_` pada variabel rahasia. Kunci Gemini hanya dipakai di sisi server.
@@ -307,6 +303,23 @@ docker compose --profile tunnel up -d --build
 Migrasi database dijalankan sebelum aplikasi mulai. Uji pemulihan backup secara berkala dan rotasi kredensial melalui prosedur deployment yang terkendali.
 
 ---
+
+## Data awal & pemeliharaan
+
+- **Seed bank soal:** `prisma/seed-data/questions.json` dimuat otomatis oleh `npm run db:seed`/startup **hanya bila bank soal kosong**, sehingga tidak menimpa data yang sudah ada.
+- **Bersihkan awalan opsi** (`A.`, `B)`, `C:`, `D -`) pada data lama:
+
+  ```bash
+  node --env-file=.env scripts/clean-option-prefixes.js
+  ```
+
+- **Ekspor bank soal** ke format seed (mengganti `questions.json`):
+
+  ```bash
+  node --env-file=.env scripts/export-questions.js
+  ```
+
+- **Atur pesan/URL donasi** dari panel admin → **Pengaturan**; tampil pada dialog setelah tryout. Nilai env `DONATION_*` hanya cadangan.
 
 ## Pengujian
 
