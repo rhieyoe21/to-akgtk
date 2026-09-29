@@ -196,6 +196,12 @@ gpg -c backups/akgtk-*.sql.gz
 rm backups/akgtk-*.sql.gz
 ```
 
+**Pulihkan kredensial** (mis. setelah error `P1000`) tanpa menghapus data:
+
+```bash
+sh scripts/reset-db-password.sh
+```
+
 **Restore** ke database baru:
 
 ```bash
@@ -231,7 +237,8 @@ sudo ufw enable
 | Gejala | Solusi |
 |---|---|
 | Container `web` restart terus | Lihat `docker compose logs web`. Biasanya nilai contoh di `.env` belum diganti. |
-| `P1001: Can't reach database server at localhost:5432` | `.env` memakai host `localhost` padahal di dalam container harus `db`. Perbaikan otomatis: isi `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` (start.js membangun `DATABASE_URL` dengan host `db`). Pastikan `POSTGRES_PASSWORD` sama dengan password yang dipakai `DATABASE_URL`, lalu `docker compose up -d --build web`. |
+| `P1001: Can't reach database server at localhost:5432` | `.env` memakai host `localhost` padahal di dalam container harus `db`. Perbaikan otomatis: isi `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` (start.js membangun `DATABASE_URL` dengan host `db`), lalu `docker compose up -d --build web`. |
+| `P1000: Authentication failed` | Volume PostgreSQL sudah terinisialisasi dengan password lama (sering muncul setelah P1001 diperbaiki). Samakan password tanpa menghapus data: `sh scripts/reset-db-password.sh` lalu `docker compose up -d web`. Pastikan `POSTGRES_PASSWORD` di `.env` adalah nilai yang diinginkan. |
 | `The table ... does not exist` | Jalankan `docker compose run --rm web ./node_modules/.bin/prisma migrate deploy` atau restart `web`. |
 | Health check gagal | Pastikan `db` healthy: `docker compose ps`, lalu `docker compose logs db`. |
 | Halaman tidak bisa diakses dari luar | Pastikan ingress tunnel mengarah ke `http://127.0.0.1:3434` dan `cloudflared` berjalan. |

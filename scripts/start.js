@@ -42,7 +42,15 @@ function run(command, args) {
   if (result.status !== 0) process.exit(result.status || 1);
 }
 
-run("./node_modules/.bin/prisma", ["migrate", "deploy"]);
+const migrate = spawnSync("./node_modules/.bin/prisma", ["migrate", "deploy"], { stdio: "inherit", env: process.env });
+if (migrate.status !== 0) {
+  console.error("");
+  console.error("Migrasi gagal. Petunjuk:");
+  console.error("- P1001 (can't reach database server): host database salah. Di container gunakan host service 'db'; isi POSTGRES_* agar DATABASE_URL dibangun otomatis.");
+  console.error("- P1000 (authentication failed): kredensial database ditolak. Volume PostgreSQL mungkin terinisialisasi dengan password lama.");
+  console.error("  Perbaiki tanpa menghapus data: sh scripts/reset-db-password.sh");
+  process.exit(migrate.status || 1);
+}
 run("node", ["prisma/seed.js"]);
 delete process.env.ADMIN_PASSWORD;
 delete process.env.ADMIN_EMAIL;

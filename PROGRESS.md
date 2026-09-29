@@ -78,6 +78,7 @@
 - [x] `.env.example`, `.gitignore`, startup menolak kredensial contoh, dan panduan Ubuntu/backup.
 - [x] Docker Compose tanpa service cloudflared (tunnel dijalankan di host) dan port host 3434.
 - [x] `DATABASE_URL` production dibangun otomatis dari `POSTGRES_*` (host `db`, password di-URL-encode) untuk mencegah error P1001.
+- [x] Skrip pemulihan `P1000` (`scripts/reset-db-password.sh`) menyamakan password PostgreSQL tanpa menghapus data; petunjuk kegagalan migrasi ditampilkan saat startup.
 - [x] Seed bank soal awal dari `prisma/seed-data/questions.json` (hanya saat bank kosong) dan skrip ekspor soal.
 - [x] Skrip pemeliharaan membersihkan awalan opsi A./B./C./D. pada data lama.
 - [x] Pesan/URL donasi dapat diatur dari panel admin (Pengaturan) tanpa restart.

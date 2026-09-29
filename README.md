@@ -319,6 +319,12 @@ Migrasi database dijalankan sebelum aplikasi mulai. Uji pemulihan backup secara 
   node --env-file=.env scripts/export-questions.js
   ```
 
+- **Pulihkan password database** (mengatasi `P1000`) tanpa menghapus data:
+
+  ```bash
+  sh scripts/reset-db-password.sh
+  ```
+
 - **Atur pesan/URL donasi** dari panel admin → **Pengaturan**; tampil pada dialog setelah tryout. Nilai env `DONATION_*` hanya cadangan.
 
 ## Pengujian
@@ -340,6 +346,7 @@ Cakupan tes: validasi URL sumber, penyaringan sitasi grounding, deteksi soft-404
 | Aplikasi menolak start | Nilai contoh pada `AUTH_SECRET`/`ADMIN_PASSWORD`/`DATABASE_URL` belum diganti. |
 | `The table ... does not exist` | Migrasi belum diterapkan: `npx prisma migrate deploy`. |
 | `P1001: Can't reach database server` | `DATABASE_URL` memakai host `localhost`. Di container gunakan host `db`; isi `POSTGRES_*` agar dibangun otomatis, lalu `docker compose up -d --build web`. |
+| `P1000: Authentication failed` | Volume PostgreSQL diinisialisasi dengan password lama. Samakan tanpa menghapus data: `sh scripts/reset-db-password.sh`. |
 | Email reset tidak terkirim | Konfigurasi SMTP salah atau penyedia mematikan SMTP AUTH. Cek log `[reset-password]`. |
 | Generate AI gagal | Kuota/limit Gemini, API key salah, atau batas aplikasi tercapai. Lihat **Log diagnostik Gemini** di panel admin. |
 | Sumber soal ditolak | Audit tautan menolak homepage/soft-404/tidak relevan. Periksa alasan pada notifikasi. |
