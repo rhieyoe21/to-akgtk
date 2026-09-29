@@ -14,8 +14,10 @@ export async function PATCH(request, { params }) {
   const options = body?.options === undefined ? existing.options : body.options.map((item) => cleanText(item, 1000));
   const correctIndex = body?.correctIndex === undefined ? existing.correctIndex : Number(body.correctIndex);
   const category = body?.category === undefined ? existing.category : body.category;
-  const sourceUrl = body?.sourceUrl === undefined ? existing.sourceUrl : safeUrl(body.sourceUrl);
-  if (!CATEGORIES.includes(category) || !Array.isArray(options) || options.length !== 4 || options.some((item) => !item) || !Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length || !sourceUrl) return fail("Soal harus memiliki empat opsi, satu kunci yang valid, dan URL sumber.");
+  const rawSourceUrl = body?.sourceUrl === undefined ? existing.sourceUrl : cleanText(body.sourceUrl, 2000);
+  const sourceUrl = rawSourceUrl ? safeUrl(rawSourceUrl) : null;
+  if (body?.sourceUrl !== undefined && rawSourceUrl && !sourceUrl) return fail("URL sumber harus berupa tautan HTTP atau HTTPS yang valid.");
+  if (!CATEGORIES.includes(category) || !Array.isArray(options) || options.length !== 4 || options.some((item) => !item) || !Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length) return fail("Soal harus memiliki empat opsi dan satu kunci yang valid.");
   const data = {
     category, options, correctIndex, sourceUrl,
     ...(DIFFICULTIES.includes(String(body?.difficulty || "").toLowerCase()) ? { difficulty: normalizeDifficulty(body.difficulty) } : {}),

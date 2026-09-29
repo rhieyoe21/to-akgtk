@@ -1,0 +1,2 @@
+ALTER TABLE "Question" ALTER COLUMN "sourceUrl" DROP NOT NULL;
+ALTER TABLE "AttemptQuestion" ALTER COLUMN "sourceUrl" DROP NOT NULL;

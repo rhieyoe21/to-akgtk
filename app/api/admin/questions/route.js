@@ -35,10 +35,12 @@ export async function POST(request) {
   const prompt = cleanText(body?.prompt, 5000);
   const options = Array.isArray(body?.options) ? body.options.map((item) => cleanText(item, 1000)) : [];
   const correctIndex = Number(body?.correctIndex);
-  const sourceUrl = safeUrl(body?.sourceUrl);
+  const rawSourceUrl = cleanText(body?.sourceUrl, 2000);
+  const sourceUrl = rawSourceUrl ? safeUrl(rawSourceUrl) : null;
   const difficulty = DIFFICULTIES.includes(String(body?.difficulty || "").toLowerCase()) ? normalizeDifficulty(body.difficulty) : "sedang";
-  if (!CATEGORIES.includes(category) || prompt.length < 10 || options.length !== 4 || options.some((item) => !item) || !Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length || !sourceUrl) {
-    return fail("Periksa kategori, soal, empat opsi, kunci jawaban, dan URL sumber.");
+  if (rawSourceUrl && !sourceUrl) return fail("URL sumber harus berupa tautan HTTP atau HTTPS yang valid.");
+  if (!CATEGORIES.includes(category) || prompt.length < 10 || options.length !== 4 || options.some((item) => !item) || !Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= options.length) {
+    return fail("Periksa kategori, soal, empat opsi, dan kunci jawaban.");
   }
   const question = await prisma.question.create({ data: {
     category, difficulty, prompt, options, correctIndex, sourceUrl,

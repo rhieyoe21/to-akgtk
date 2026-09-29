@@ -31,7 +31,7 @@ model Question {
   options        Json
   correctIndex   Int
   explanation    String?  @db.Text
-  sourceUrl      String   @db.Text
+  sourceUrl      String?  @db.Text
   sourceTitle    String?  @db.Text
   difficulty     String   @default("sedang")
   hideSource     Boolean  @default(false)
@@ -72,7 +72,7 @@ model AttemptQuestion {
   optionsSnapshot Json
   correctIndex   Int
   explanation    String?  @db.Text
-  sourceUrl      String   @db.Text
+  sourceUrl      String?  @db.Text
   sourceTitle    String?  @db.Text
   hideSource     Boolean  @default(false)
   category       String

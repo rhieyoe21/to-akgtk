@@ -58,6 +58,7 @@
 - [x] Deteksi duplikat kode terhadap bank soal dan dalam batch sebelum audit sumber.
 - [x] Validasi struktur respons AI dan penyimpanan sumber.
 - [x] UI admin untuk membuat, mengedit, mengaktifkan, dan menonaktifkan soal.
+- [x] Impor soal via upload berkas JSON atau tempel JSON; kolom `sourceUrl`, `sourceTitle`, dan `explanation` opsional, dengan validasi dan deteksi duplikat.
 - [x] Form tambah/edit soal ditampilkan sebagai modal agar tidak perlu menggulir ke atas.
 
 ### 4. Tryout dan evaluasi

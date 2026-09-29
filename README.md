@@ -48,7 +48,8 @@ Aplikasi SaaS pembelajaran dan simulasi **Asesmen Kinerja Guru dan Tenaga Kepend
 ### Admin pusat
 
 - Dibuat privat saat instalasi melalui variabel lingkungan; tidak ada pendaftaran admin publik.
-- Bank soal: tambah/edit manual, buat dengan AI, aktif/nonaktif, hapus satu/​batch.
+- Bank soal: tambah/edit manual, buat dengan AI, **impor JSON** (upload berkas atau tempel), aktif/nonaktif, hapus satu/​batch.
+- Impor JSON: wajib `category`, `prompt`, `options` (4), `correctIndex` (0–3); `sourceUrl`, `sourceTitle`, dan `explanation` opsional. Duplikat (terhadap bank dan dalam batch) otomatis dilewati beserta alasannya.
 - Filter bank soal: kompetensi, status (Aktif/Nonaktif/Semua; default **Aktif**), tingkat kesulitan, dan pencarian teks.
 - Aksi batch: aktifkan/nonaktifkan, sembunyikan/tampilkan sumber, dan hapus — termasuk **Pilih semua** lintas halaman sesuai filter.
 - Pagination dengan tombol ikon halaman pertama/sebelumnya/berikutnya/terakhir.
@@ -269,6 +270,27 @@ Di **production**, tautan tidak pernah dicatat dan kegagalan kirim membatalkan t
 - **Google Search grounding** opsional. Bila grounding tidak memberi sitasi, sumber tetap divalidasi lewat audit tautan.
 - **Verifikasi bukti isi halaman** dengan Gemini opsional (menambah pemakaian kuota).
 - Soal hasil AI otomatis menandai **sumber disembunyikan** dan tetap dapat diubah per soal atau secara batch.
+- **Impor JSON** dari panel admin → Bank soal → **Impor JSON**. Contoh:
+
+  ```json
+  {
+    "questions": [
+      {
+        "category": "Manajerial",
+        "prompt": "Tuliskan teks pertanyaan di sini?",
+        "options": ["Opsi A", "Opsi B", "Opsi C", "Opsi D"],
+        "correctIndex": 0,
+        "explanation": "Pembahasan (opsional)",
+        "sourceUrl": "https://contoh.go.id/artikel (opsional)",
+        "sourceTitle": "Judul sumber (opsional)",
+        "difficulty": "sedang",
+        "hideSource": false,
+        "isActive": true
+      }
+    ]
+  }
+  ```
+
 - Hanya soal **aktif** yang dipilih untuk tryout.
 
 ---
