@@ -50,7 +50,7 @@ export default function SiteHeader() {
 
   return <header className="site-header"><div className="shell header-inner">
     <Link className="brand" href="/" aria-label="Ruang AKGTK beranda"><span className="brand-mark">R</span><span>Ruang AKGTK</span></Link>
-    {!hidePublicNav && <nav className="header-nav" aria-label="Navigasi utama"><Link href="/#kompetensi">Kompetensi</Link><Link href="/#tentang">Tentang simulasi</Link></nav>}
+    {/* {!hidePublicNav && <nav className="header-nav" aria-label="Navigasi utama"><Link href="/#kompetensi">Kompetensi</Link><Link href="/#tentang">Tentang simulasi</Link></nav>} */}
     <div className="header-actions">
       {user ? <>
         <span className="header-user">Halo, {user.name.split(" ")[0]}</span>

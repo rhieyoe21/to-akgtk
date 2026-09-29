@@ -2,7 +2,7 @@ import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 
 export const metadata = {
-  title: "Ruang AKGTK — Simulasi Kepala Madrasah",
+  title: "Ruang AKGTK — Simulasi AKGTK Kepala Madrasah",
   description: "Ruang belajar dan simulasi tryout AKGTK untuk kompetensi Kepala Madrasah."
 };
 
